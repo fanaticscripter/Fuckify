@@ -78,8 +78,8 @@
         <vue-slider
           v-model="fontSizeMultiplier"
           v-bind="sliderCommonProps"
-          :min="0.25"
-          :max="1"
+          :min="minFontSizeMultiplier"
+          :max="maxFontSizeMultiplier"
           :interval="0.01"
         />
       </div>
@@ -89,8 +89,8 @@
         <vue-slider
           v-model="extraStrokeWidth"
           v-bind="sliderCommonProps"
-          :min="0"
-          :max="1"
+          :min="minExtraStrokeWidth"
+          :max="maxExtraStrokeWidth"
           :interval="0.01"
         />
       </div>
@@ -100,8 +100,8 @@
         <vue-slider
           v-model="verticalStretch"
           v-bind="sliderCommonProps"
-          :min="1"
-          :max="2"
+          :min="minVerticalStretch"
+          :max="maxVerticalStretch"
           :interval="0.01"
         />
       </div>
@@ -122,7 +122,14 @@ import ColorSelector from '@/components/ColorSelector.vue';
 import FontSelector from '@/components/FontSelector.vue';
 import { renderAndDownload } from '@/render';
 import { FontFamily, fonts } from '@/fonts';
-import { clamp, withLchLightness } from '@/utils';
+import {
+  clamp,
+  getLocalStorage,
+  getLocalStorageNumber,
+  isHexColor,
+  setLocalStorage,
+  withLchLightness,
+} from '@/utils';
 
 import placeholderURL from '@/assets/placeholder.svg';
 
@@ -198,8 +205,38 @@ watch(screenshotScale, (newScale, oldScale) => {
   fuckLeft.value = Math.round((fuckLeft.value * newScale) / oldScale);
 });
 
-const coverColor = ref('#ef4444');
-const fontFamily = ref(fonts[0] as FontFamily);
+const COVER_COLOR_LOCALSTORAGE_KEY = 'coverColor';
+const FONT_FAMILY_LOCALSTORAGE_KEY = 'fontFamily';
+const FONT_SIZE_MULTIPLIER_LOCALSTORAGE_KEY = 'fontSizeMultiplier';
+const EXTRA_STROKE_WIDTH_LOCALSTORAGE_KEY = 'extraStrokeWidth';
+const VERTICAL_STRETCH_LOCALSTORAGE_KEY = 'verticalStretch';
+
+const defaultCoverColor = '#ef4444';
+const defaultFontSizeMultiplier = 0.85;
+const minFontSizeMultiplier = 0.25;
+const maxFontSizeMultiplier = 1;
+const defaultExtraStrokeWidth = 0;
+const minExtraStrokeWidth = 0;
+const maxExtraStrokeWidth = 1;
+const defaultVerticalStretch = 1;
+const minVerticalStretch = 1;
+const maxVerticalStretch = 2;
+
+const coverColor = ref(
+  (() => {
+    const stored = getLocalStorage(COVER_COLOR_LOCALSTORAGE_KEY);
+    return stored && isHexColor(stored) ? stored : defaultCoverColor;
+  })()
+);
+const fontFamily = ref(
+  ((): FontFamily => {
+    const defaultFont = fonts[0];
+    const stored = getLocalStorage(FONT_FAMILY_LOCALSTORAGE_KEY);
+    return stored && (fonts as readonly string[]).includes(stored)
+      ? (stored as FontFamily)
+      : defaultFont;
+  })()
+);
 const maxFontSize = computed(() => {
   const { width } = measureFuckSize({
     fontFamily: fontFamily.value,
@@ -208,10 +245,47 @@ const maxFontSize = computed(() => {
   });
   return (screenshotDisplayWidth.value / width) * 100;
 });
-const fontSizeMultiplier = ref(0.85);
+const fontSizeMultiplier = ref(
+  getLocalStorageNumber(
+    FONT_SIZE_MULTIPLIER_LOCALSTORAGE_KEY,
+    defaultFontSizeMultiplier,
+    minFontSizeMultiplier,
+    maxFontSizeMultiplier
+  )
+);
 const fontSize = computed(() => maxFontSize.value * fontSizeMultiplier.value);
-const extraStrokeWidth = ref(0);
-const verticalStretch = ref(1);
+const extraStrokeWidth = ref(
+  getLocalStorageNumber(
+    EXTRA_STROKE_WIDTH_LOCALSTORAGE_KEY,
+    defaultExtraStrokeWidth,
+    minExtraStrokeWidth,
+    maxExtraStrokeWidth
+  )
+);
+const verticalStretch = ref(
+  getLocalStorageNumber(
+    VERTICAL_STRETCH_LOCALSTORAGE_KEY,
+    defaultVerticalStretch,
+    minVerticalStretch,
+    maxVerticalStretch
+  )
+);
+
+watch(coverColor, () => {
+  setLocalStorage(COVER_COLOR_LOCALSTORAGE_KEY, coverColor.value);
+});
+watch(fontFamily, () => {
+  setLocalStorage(FONT_FAMILY_LOCALSTORAGE_KEY, fontFamily.value);
+});
+watch(fontSizeMultiplier, () => {
+  setLocalStorage(FONT_SIZE_MULTIPLIER_LOCALSTORAGE_KEY, fontSizeMultiplier.value);
+});
+watch(extraStrokeWidth, () => {
+  setLocalStorage(EXTRA_STROKE_WIDTH_LOCALSTORAGE_KEY, extraStrokeWidth.value);
+});
+watch(verticalStretch, () => {
+  setLocalStorage(VERTICAL_STRETCH_LOCALSTORAGE_KEY, verticalStretch.value);
+});
 
 const sliderCommonProps = computed(() => ({
   tooltip: 'none' as const,

@@ -13,6 +13,20 @@ export function getLocalStorage(key: string): string | undefined {
   }
 }
 
+export function getLocalStorageNumber(
+  key: string,
+  defaultValue: number,
+  min: number,
+  max: number
+): number {
+  const s = getLocalStorage(key);
+  if (!s) {
+    return defaultValue;
+  }
+  const x = parseFloat(s);
+  return Number.isFinite(x) ? clamp(x, min, max) : defaultValue;
+}
+
 export function setLocalStorage(key: string, val: unknown): void {
   try {
     localStorage[key] = val;
