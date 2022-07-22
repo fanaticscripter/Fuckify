@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+setopt errexit nounset pipefail
+cd $0:A:h
+yarn build
+timeout 120 vercel --prod
