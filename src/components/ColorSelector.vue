@@ -1,12 +1,12 @@
 <template>
   <div>
     <label :for="inputId">Color</label>
-    <input ref="inputRef" :id="inputId" type="color" v-model="selected" class="sr-only" />
-    <div
-      class="h-8 w-8 rounded-full border border-gray-300 mt-1 hover:cursor-pointer"
+    <input :id="inputId" type="color" v-model="selected" class="sr-only" />
+    <label
+      :for="inputId"
+      class="block h-8 w-8 rounded-full border border-gray-300 mt-1 hover:cursor-pointer"
       :style="{ backgroundColor: selected }"
-      @click="inputRef && inputRef.click()"
-    ></div>
+    ></label>
   </div>
 </template>
 
@@ -28,6 +28,4 @@ watch(modelValue, newColor => {
 watch(selected, newColor => {
   emit('update:modelValue', newColor);
 });
-
-const inputRef = ref<HTMLInputElement>();
 </script>
