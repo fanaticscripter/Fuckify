@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  height: 100vh;
+  height: stretch;
+}
+
+body {
+  min-height: 100vh;
+  min-height: stretch;
+  @apply flex flex-col;
+}
+
+@supports (min-height: -moz-available) {
+  html {
+    height: 100vh;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+}
+
+@font-face {
+  font-family: 'Satisfy';
+  src: url('/fonts/Satisfy.woff2');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Permanent Marker';
+  src: url('/fonts/PermanentMarker.woff2');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Indie Flower';
+  src: url('/fonts/IndieFlower.woff2');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Courgette';
+  src: url('/fonts/Courgette.woff2');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Patrick Hand';
+  src: url('/fonts/PatrickHand.woff2');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Yellowtail';
+  src: url('/fonts/Yellowtail.woff2');
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'Nanum Brush Script';
+  src: url('/fonts/NanumBrushScript.woff2');
+  font-display: block;
+}
