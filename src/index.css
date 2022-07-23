@@ -25,42 +25,42 @@ body {
 
 @font-face {
   font-family: 'Satisfy';
-  src: url('/fonts/Satisfy.woff2');
+  src: url('/fonts/Satisfy.v2.woff2');
   font-display: block;
 }
 
 @font-face {
   font-family: 'Permanent Marker';
-  src: url('/fonts/PermanentMarker.woff2');
+  src: url('/fonts/PermanentMarker.v2.woff2');
   font-display: block;
 }
 
 @font-face {
   font-family: 'Indie Flower';
-  src: url('/fonts/IndieFlower.woff2');
+  src: url('/fonts/IndieFlower.v2.woff2');
   font-display: block;
 }
 
 @font-face {
   font-family: 'Courgette';
-  src: url('/fonts/Courgette.woff2');
+  src: url('/fonts/Courgette.v2.woff2');
   font-display: block;
 }
 
 @font-face {
   font-family: 'Patrick Hand';
-  src: url('/fonts/PatrickHand.woff2');
+  src: url('/fonts/PatrickHand.v2.woff2');
   font-display: block;
 }
 
 @font-face {
   font-family: 'Yellowtail';
-  src: url('/fonts/Yellowtail.woff2');
+  src: url('/fonts/Yellowtail.v2.woff2');
   font-display: block;
 }
 
 @font-face {
   font-family: 'Nanum Brush Script';
-  src: url('/fonts/NanumBrushScript.woff2');
+  src: url('/fonts/NanumBrushScript.v2.woff2');
   font-display: block;
 }

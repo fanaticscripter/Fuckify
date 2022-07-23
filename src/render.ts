@@ -3,6 +3,7 @@ export async function renderAndDownload({
   height,
   width,
   color,
+  text,
   fontFamily,
   fontSize,
   extraStrokeWidth,
@@ -14,6 +15,7 @@ export async function renderAndDownload({
   height: number;
   width: number;
   color: string;
+  text: string;
   fontFamily: string;
   fontSize: number;
   extraStrokeWidth: number;
@@ -52,8 +54,8 @@ export async function renderAndDownload({
   maskCtx.font = `${fontSize}px "${fontFamily}"`;
   maskCtx.textAlign = 'left';
   maskCtx.textBaseline = 'top';
-  maskCtx.fillText('FUCK', left, top / verticalStretch);
-  maskCtx.strokeText('FUCK', left, top / verticalStretch);
+  maskCtx.fillText(text, left, top / verticalStretch);
+  maskCtx.strokeText(text, left, top / verticalStretch);
 
   ctx.drawImage(maskCanvas, 0, 0, width, height);
 

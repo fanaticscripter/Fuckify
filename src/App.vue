@@ -63,7 +63,7 @@
             backgroundColor: withLchLightness(coverColor, 90),
           }"
         >
-          Drag the <span class="px-px" :style="{ fontFamily }">FUCK</span> to move it around!
+          Drag the <span class="px-px" :style="{ fontFamily }">{{ text }}</span> to move it around!
         </div>
       </div>
     </div>
@@ -105,6 +105,65 @@
           :interval="0.01"
         />
       </div>
+
+      <div>
+        <div class="mb-1">Don't like profanity?</div>
+        <headlessui-switch-group as="div" class="flex items-center space-x-2">
+          <headlessui-switch-label>Safe for work</headlessui-switch-label>
+          <headlessui-switch
+            v-model="safeForWork"
+            class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none"
+            :class="safeForWork ? '' : 'bg-gray-200'"
+            :style="safeForWork ? { backgroundColor: coverColor } : {}"
+          >
+            <span class="sr-only">Use setting</span>
+            <span
+              class="pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
+              :class="safeForWork ? 'translate-x-5' : 'translate-x-0'"
+            >
+              <span
+                class="absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
+                :class="
+                  safeForWork
+                    ? 'opacity-0 ease-out duration-100'
+                    : 'opacity-100 ease-in duration-200'
+                "
+                aria-hidden="true"
+              >
+                <svg class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 12 12">
+                  <path
+                    d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span
+                class="absolute inset-0 h-full w-full flex items-center justify-center transition-opacity"
+                :class="
+                  safeForWork
+                    ? 'opacity-100 ease-in duration-200'
+                    : 'opacity-0 ease-out duration-100'
+                "
+                aria-hidden="true"
+              >
+                <svg
+                  class="h-3 w-3"
+                  :style="{ color: coverColor }"
+                  fill="currentColor"
+                  viewBox="0 0 12 12"
+                >
+                  <path
+                    d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z"
+                  />
+                </svg>
+              </span>
+            </span>
+          </headlessui-switch>
+        </headlessui-switch-group>
+      </div>
     </div>
   </div>
 </template>
@@ -114,6 +173,11 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useWindowSize } from '@vueuse/core';
 import FontFaceObserver from 'fontfaceobserver';
 
+import {
+  Switch as HeadlessuiSwitch,
+  SwitchGroup as HeadlessuiSwitchGroup,
+  SwitchLabel as HeadlessuiSwitchLabel,
+} from '@headlessui/vue';
 import VueSlider from 'vue-slider-component';
 import 'vue-slider-component/theme/default.css';
 import { CameraIcon, SaveIcon } from '@heroicons/vue/solid';
@@ -157,10 +221,12 @@ const screenshotDisplayWidth = computed(() =>
 const fuckCanvasRef = ref<HTMLCanvasElement>();
 
 function measureFuckSize({
+  text,
   fontFamily,
   fontSize,
   verticalStretch,
 }: {
+  text: string;
   fontFamily: string;
   fontSize: number;
   verticalStretch: number;
@@ -177,7 +243,7 @@ function measureFuckSize({
     throw new Error('cannot get canvas 2d context');
   }
   ctx.font = `${fontSize}px "${fontFamily}"`;
-  const metrics = ctx.measureText('FUCK');
+  const metrics = ctx.measureText(text);
   return {
     height: (metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) * verticalStretch,
     width: metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight,
@@ -186,6 +252,7 @@ function measureFuckSize({
 
 const fuckDimensions = computed(() =>
   measureFuckSize({
+    text: text.value,
     fontFamily: fontFamily.value,
     fontSize: maxFontSize.value * fontSizeMultiplier.value,
     verticalStretch: verticalStretch.value,
@@ -210,6 +277,7 @@ const FONT_FAMILY_LOCALSTORAGE_KEY = 'fontFamily';
 const FONT_SIZE_MULTIPLIER_LOCALSTORAGE_KEY = 'fontSizeMultiplier';
 const EXTRA_STROKE_WIDTH_LOCALSTORAGE_KEY = 'extraStrokeWidth';
 const VERTICAL_STRETCH_LOCALSTORAGE_KEY = 'verticalStretch';
+const SAFE_FOR_WORK_LOCALSTORAGE_KEY = 'safeForWork';
 
 const defaultCoverColor = '#ef4444';
 const defaultFontSizeMultiplier = 0.85;
@@ -239,6 +307,7 @@ const fontFamily = ref(
 );
 const maxFontSize = computed(() => {
   const { width } = measureFuckSize({
+    text: text.value,
     fontFamily: fontFamily.value,
     fontSize: 100,
     verticalStretch: 1,
@@ -270,6 +339,8 @@ const verticalStretch = ref(
     maxVerticalStretch
   )
 );
+const safeForWork = ref(getLocalStorage(SAFE_FOR_WORK_LOCALSTORAGE_KEY) === 'true');
+const text = computed(() => (safeForWork.value ? 'F*CK' : 'FUCK'));
 
 watch(coverColor, () => {
   setLocalStorage(COVER_COLOR_LOCALSTORAGE_KEY, coverColor.value);
@@ -285,6 +356,9 @@ watch(extraStrokeWidth, () => {
 });
 watch(verticalStretch, () => {
   setLocalStorage(VERTICAL_STRETCH_LOCALSTORAGE_KEY, verticalStretch.value);
+});
+watch(safeForWork, () => {
+  setLocalStorage(SAFE_FOR_WORK_LOCALSTORAGE_KEY, safeForWork.value);
 });
 
 const sliderCommonProps = computed(() => ({
@@ -325,8 +399,12 @@ async function drawFuckMask() {
   ctx.font = `${fontSize.value * canvasScale.value}px "${fontFamily.value}"`;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'top';
-  ctx.fillText('FUCK', canvasPaddingX * canvasScale.value, canvasPaddingY * canvasScale.value);
-  ctx.strokeText('FUCK', canvasPaddingX * canvasScale.value, canvasPaddingY * canvasScale.value);
+  ctx.fillText(text.value, canvasPaddingX * canvasScale.value, canvasPaddingY * canvasScale.value);
+  ctx.strokeText(
+    text.value,
+    canvasPaddingX * canvasScale.value,
+    canvasPaddingY * canvasScale.value
+  );
 }
 
 watch(
@@ -334,6 +412,7 @@ watch(
     screenshotDisplayHeight,
     screenshotDisplayWidth,
     coverColor,
+    text,
     fontFamily,
     fontSize,
     extraStrokeWidth,
@@ -429,6 +508,7 @@ const exportFuckified = () =>
     height: screenshotHeight.value,
     width: screenshotWidth.value,
     color: coverColor.value,
+    text: text.value,
     fontFamily: fontFamily.value,
     fontSize: (maxFontSize.value * fontSizeMultiplier.value) / screenshotScale.value,
     extraStrokeWidth: extraStrokeWidth.value,
